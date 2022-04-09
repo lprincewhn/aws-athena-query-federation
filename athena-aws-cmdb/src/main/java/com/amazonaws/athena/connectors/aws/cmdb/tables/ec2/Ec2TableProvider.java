@@ -40,6 +40,7 @@ import com.amazonaws.services.ec2.model.InstanceNetworkInterface;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.StateReason;
+import com.amazonaws.services.ec2.model.Tag;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -171,6 +172,18 @@ public class Ec2TableProvider
                         throw new RuntimeException("Unknown field " + field.getName());
                     }, instance.getState());
 
+            matched &= block.offerComplexValue("tags",
+                    row,
+                    (Field field, Object val) -> {
+                        if (field.getName().equals("key")) {
+                            return ((Tag) val).getKey();
+                        }
+                        else if (field.getName().equals("value")) {
+                            return ((Tag) val).getValue();
+                        }
+                        throw new RuntimeException("Unknown field " + field.getName());
+                    }, instance.getTags());
+
             matched &= block.offerComplexValue("network_interfaces",
                     row,
                     (Field field, Object val) -> {
@@ -264,6 +277,14 @@ public class Ec2TableProvider
 
                 //Example of a List of Structs
                 .addField(
+                        FieldBuilder.newBuilder("tags", new ArrowType.List())
+                                .addField(
+                                        FieldBuilder.newBuilder("tag", Types.MinorType.STRUCT.getType())
+                                                .addStringField("key")
+                                                .addStringField("value")
+                                                .build())
+                                .build())
+                .addField(
                         FieldBuilder.newBuilder("network_interfaces", new ArrowType.List())
                                 .addField(
                                         FieldBuilder.newBuilder("interface", Types.MinorType.STRUCT.getType())
@@ -308,6 +329,7 @@ public class Ec2TableProvider
                 .addMetadata("security_groups", "The list of security group (ids) attached to this instance.")
                 .addMetadata("security_group_names", "The list of security group (names) attached to this instance.")
                 .addMetadata("ebs_volumes", "The list of ebs volume (ids) attached to this instance.")
+                .addMetadata("tags", "All key-value tags of the instance.")
                 .build();
     }
 }

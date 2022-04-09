@@ -31,7 +31,6 @@ import com.amazonaws.services.elasticmapreduce.model.DescribeClusterRequest;
 import com.amazonaws.services.elasticmapreduce.model.DescribeClusterResult;
 import com.amazonaws.services.elasticmapreduce.model.ListClustersRequest;
 import com.amazonaws.services.elasticmapreduce.model.ListClustersResult;
-import com.amazonaws.services.elasticmapreduce.model.Tag;
 import com.amazonaws.services.rds.AmazonRDS;
 import com.amazonaws.services.rds.model.DBInstance;
 import com.amazonaws.services.rds.model.DBInstanceStatusInfo;
@@ -44,6 +43,7 @@ import com.amazonaws.services.rds.model.DescribeDBInstancesResult;
 import com.amazonaws.services.rds.model.DomainMembership;
 import com.amazonaws.services.rds.model.Endpoint;
 import com.amazonaws.services.rds.model.Subnet;
+import com.amazonaws.services.rds.model.Tag;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -183,6 +183,10 @@ public class RdsTableProviderTest
 
     private DBInstance makeValue(String id)
     {
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag()
+                .withKey("key")
+                .withValue("value"));
         return new DBInstance()
                 .withDBInstanceIdentifier(id)
                 .withAvailabilityZone("primary_az")
@@ -232,6 +236,7 @@ public class RdsTableProviderTest
                 .withInstanceCreateTime(new Date(100000))
                 .withIops(100)
                 .withMultiAZ(true)
-                .withPubliclyAccessible(true);
+                .withPubliclyAccessible(true)
+                .withTagList(tags);
     }
 }

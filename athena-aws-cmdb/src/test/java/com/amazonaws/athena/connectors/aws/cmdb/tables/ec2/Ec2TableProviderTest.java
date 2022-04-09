@@ -34,6 +34,7 @@ import com.amazonaws.services.ec2.model.InstanceNetworkInterface;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.StateReason;
+import com.amazonaws.services.ec2.model.Tag;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -220,6 +221,13 @@ public class Ec2TableProviderTest
         instance.withNetworkInterfaces(interfaces)
                 .withSecurityGroups(new GroupIdentifier().withGroupId("group_id").withGroupName("group_name"))
                 .withBlockDeviceMappings(new InstanceBlockDeviceMapping().withDeviceName("device_name").withEbs(new EbsInstanceBlockDevice().withVolumeId("volume_id")));
+
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag()
+                .withKey("key")
+                .withValue("value"));
+
+        instance.withTags(tags);
 
         return instance;
     }

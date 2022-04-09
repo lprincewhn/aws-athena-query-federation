@@ -22,6 +22,7 @@ package com.amazonaws.athena.connectors.aws.cmdb;
 import com.amazonaws.athena.connector.lambda.domain.TableName;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.TableProvider;
 import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing;
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduce;
 import com.amazonaws.services.rds.AmazonRDS;
 import com.amazonaws.services.s3.AmazonS3;
@@ -38,8 +39,8 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TableProviderFactoryTest
 {
-    private int expectedSchemas = 4;
-    private int expectedTables = 11;
+    private int expectedSchemas = 5;
+    private int expectedTables = 12;
 
     @Mock
     private AmazonEC2 mockEc2;
@@ -53,7 +54,10 @@ public class TableProviderFactoryTest
     @Mock
     private AmazonS3 amazonS3;
 
-    private TableProviderFactory factory = new TableProviderFactory(mockEc2, mockEmr, mockRds, amazonS3);
+    @Mock
+    private AmazonElasticLoadBalancing elbv2;
+
+    private TableProviderFactory factory = new TableProviderFactory(mockEc2, mockEmr, mockRds, amazonS3, elbv2);
 
     @Test
     public void getTableProviders()

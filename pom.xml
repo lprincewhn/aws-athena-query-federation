@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aws-sdk.version>1.11.800</aws-sdk.version>
+        <aws-sdk.version>1.12.132</aws-sdk.version>
         <aws-athena-federation-sdk.version>2021.51.1</aws-athena-federation-sdk.version>
         <aws.lambda-java-core.version>1.2.0</aws.lambda-java-core.version>
         <aws.lambda-java-log4j2.version>1.5.0</aws.lambda-java-log4j2.version>

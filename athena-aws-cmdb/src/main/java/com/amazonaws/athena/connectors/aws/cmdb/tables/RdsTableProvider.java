@@ -41,11 +41,13 @@ import com.amazonaws.services.rds.model.DescribeDBInstancesResult;
 import com.amazonaws.services.rds.model.DomainMembership;
 import com.amazonaws.services.rds.model.Endpoint;
 import com.amazonaws.services.rds.model.Subnet;
+import com.amazonaws.services.rds.model.Tag;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 
+import java.net.InetAddress;
 import java.util.stream.Collectors;
 
 /**
@@ -243,6 +245,14 @@ public class RdsTableProvider
                     },
                     instance.getEndpoint());
 
+            try {
+                String ip = InetAddress.getByName(instance.getEndpoint().getAddress()).getHostAddress();
+                matched &= block.offerValue("endpoint_ip", row, ip);
+            }
+            catch (Exception e) {
+                matched &= block.offerValue("endpoint_ip", row, "endpoint_ip");
+            }
+
             matched &= block.offerComplexValue("status_infos",
                     row,
                     (Field field, Object val) -> {
@@ -261,6 +271,18 @@ public class RdsTableProvider
                         throw new RuntimeException("Unexpected field " + field.getName());
                     },
                     instance.getStatusInfos());
+
+            matched &= block.offerComplexValue("tags",
+                    row,
+                    (Field field, Object val) -> {
+                        if (field.getName().equals("key")) {
+                            return ((Tag) val).getKey();
+                        }
+                        else if (field.getName().equals("value")) {
+                            return ((Tag) val).getValue();
+                        }
+                        throw new RuntimeException("Unknown field " + field.getName());
+                    }, instance.getTagList());
 
             return matched ? 1 : 0;
         });
@@ -327,6 +349,7 @@ public class RdsTableProvider
                         .addIntField("port")
                         .addStringField("zone")
                         .build())
+                .addStringField("endpoint_ip")
                 .addField("create_time", Types.MinorType.DATEMILLI.getType())
                 .addBitField("public_access")
 
@@ -338,6 +361,15 @@ public class RdsTableProvider
                                                 .addBitField("is_normal")
                                                 .addStringField("status")
                                                 .addStringField("type")
+                                                .build())
+                                .build())
+
+                .addField(
+                        FieldBuilder.newBuilder("tags", new ArrowType.List())
+                                .addField(
+                                        FieldBuilder.newBuilder("tag", Types.MinorType.STRUCT.getType())
+                                                .addStringField("key")
+                                                .addStringField("value")
                                                 .build())
                                 .build())
 
@@ -368,11 +400,13 @@ public class RdsTableProvider
                 .addMetadata("db_security_groups", "The security groups applies the DB Instance")
                 .addMetadata("subnet_groups", "The subnets available to the DB Instance")
                 .addMetadata("endpoint", "The endpoint of the DB Instance")
+                .addMetadata("endpoint_ip", "The endpoint IP of the DB Instance")
                 .addMetadata("create_time", "The create time of the DB Instance")
                 .addMetadata("public_access", "True if publically accessible.")
                 .addMetadata("status_infos", "The status info details associated with the DB Instance")
                 .addMetadata("iops", "The total provisioned IOPs for the DB Instance.")
                 .addMetadata("is_multi_az", "True if the DB Instance is avialable in multiple AZs.")
+                .addMetadata("tags", "All key-value tags of the DB Instance.")
                 .build();
     }
 }
