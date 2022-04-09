@@ -12,17 +12,10 @@
     <description>The Amazon Athena Query Federation SDK allows you to customize Amazon Athena with your own code.</description>
     <url>https://github.com/awslabs/aws-athena-query-federation</url>
     <properties>
-<<<<<<< HEAD
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <aws-sdk.version>1.12.132</aws-sdk.version>
         <aws-athena-federation-sdk.version>2021.51.1</aws-athena-federation-sdk.version>
-=======
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <aws-sdk.version>1.11.800</aws-sdk.version>
-        <aws-athena-federation-sdk.version>2022.10.1</aws-athena-federation-sdk.version>
->>>>>>> dc2d4860d9298f185d98f96f640e492fee45beb9
         <aws.lambda-java-core.version>1.2.0</aws.lambda-java-core.version>
         <aws.lambda-java-log4j2.version>1.5.1</aws.lambda-java-log4j2.version>
         <slf4j-log4j.version>1.7.28</slf4j-log4j.version>
