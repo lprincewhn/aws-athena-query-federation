@@ -50,6 +50,11 @@
             <version>${aws-sdk.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-cloudfront</artifactId>
+            <version>${aws-sdk.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4jVersion}</version>

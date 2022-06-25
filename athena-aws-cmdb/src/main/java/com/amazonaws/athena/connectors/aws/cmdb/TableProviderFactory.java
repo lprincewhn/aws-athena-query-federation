@@ -20,6 +20,7 @@
 package com.amazonaws.athena.connectors.aws.cmdb;
 
 import com.amazonaws.athena.connector.lambda.domain.TableName;
+import com.amazonaws.athena.connectors.aws.cmdb.tables.DistributionTableProvider;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.EmrClusterTableProvider;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.RdsTableProvider;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.TableProvider;
@@ -33,6 +34,8 @@ import com.amazonaws.athena.connectors.aws.cmdb.tables.ec2.SubnetTableProvider;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.ec2.VpcTableProvider;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.s3.S3BucketsTableProvider;
 import com.amazonaws.athena.connectors.aws.cmdb.tables.s3.S3ObjectsTableProvider;
+import com.amazonaws.services.cloudfront.AmazonCloudFront;
+import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing;
@@ -65,11 +68,13 @@ public class TableProviderFactory
                 AmazonElasticMapReduceClientBuilder.standard().build(),
                 AmazonRDSClientBuilder.standard().build(),
                 AmazonS3ClientBuilder.standard().build(),
-                AmazonElasticLoadBalancingClientBuilder.standard().build());
+                AmazonElasticLoadBalancingClientBuilder.standard().build(),
+                AmazonCloudFrontClientBuilder.standard().build()
+        );
     }
 
     @VisibleForTesting
-    protected TableProviderFactory(AmazonEC2 ec2, AmazonElasticMapReduce emr, AmazonRDS rds, AmazonS3 amazonS3, AmazonElasticLoadBalancing elbv2)
+    protected TableProviderFactory(AmazonEC2 ec2, AmazonElasticMapReduce emr, AmazonRDS rds, AmazonS3 amazonS3, AmazonElasticLoadBalancing elbv2, AmazonCloudFront cloudfront)
     {
         addProvider(new Ec2TableProvider(ec2));
         addProvider(new EbsTableProvider(ec2));
@@ -83,6 +88,7 @@ public class TableProviderFactory
         addProvider(new S3ObjectsTableProvider(amazonS3));
         addProvider(new S3BucketsTableProvider(amazonS3));
         addProvider(new TgTableProvider(elbv2));
+        addProvider(new DistributionTableProvider(cloudfront));
     }
 
     /**
